@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <!--Edit the title of the page-->
+    <title>Real time traffic in Barcelona</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <!--[if lte IE 8]>
+      <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+    <![endif]-->
+    <!--Switch between the different themes changing the stylesheet below - light-theme.css |dark-theme.css -->
+    <link rel="stylesheet" href="css/light-theme.css">
+    <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+  </head>
+  <body>
+
+    <div class="map" id="map"></div>
+
+    <div class="sidepanel">
+      <div class="wrapper">
+          <a href="https://github.com/jatorre/bcn_traffic_map"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
+        <div class="context subheader">
+          <p>Map created by <a href="http://twitter.com/jatorre">jatorre</a>. Last update <b id="updatedAtb">...</b> min. ago.</p>
+        </div>
+        <h1>Real time traffic in Barcelona</h1>
+        <p>This is a map of the traffic status in Barcelona. It has been created using the public data from the <a href="http://w20.bcn.cat/opendata/Detall.aspx?lang=ANG&amp;recurs=TRAMS">Barcelona Open Data Portal</a>. </p>
+
+        <!--Copy and paste the div below for creating content blocks-->
+        <h3>LEGEND</h3>
+        <p><img src="img/legend.png"></p>
+            
+            
+        <p>This map has been created to demo how to use <a href="http://www.cartodb.com">CartoDB</a> to represent real time data. The data in the source changes more or less every 15 minutes. Through a little script in AppEngine we update the data on CartoDB. Because maps on CartoDB are dynamically generated, what you see here is the latest map from the latest data. </p>
+
+        <h3>Source and how to</h3>
+        <p>On the GitHub repository the README goes through all the details on how this has been created. If you have technical questions use the <a href="https://groups.google.com/forum/#!forum/cartodb">CartoDB google groups</a>, and <a href="http://twitter.com/jatorre">here</a> if you want to contact the author.</p>
+
+        <div class="context footer">
+          <p>Check out <a href="http://cartodb.com">CartoDB</a> for more cool maps.</p></p>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+        var viz = cartodb.createVis('map', 'http://osm2.cartodb.com/api/v1/viz/2275/viz.json')
+            .done(function(vis, layers) {
+                //Update the info about last update
+                $("#updatedAtb").text(
+                    Math.floor((Math.abs(new Date() - new Date(Date.parse(viz.updated_at)))) / (1000*60))
+                );                
+            });  
+    
+    </script>
+
+  </body>
+      </html>

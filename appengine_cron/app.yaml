@@ -1,0 +1,8 @@
+application: cdb-jatorre-crons
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /bcn_traffic
+  script: main.py

@@ -16,3 +16,12 @@ a:hover{text-decoration: underline;}
 .subheader{border-bottom: 1px solid #ddd;}
 .footer{border-top: 1px solid #ddd; margin-top: 30px;}
 .titleBlock{text-align: right;}
+
+.container > header .twitter-share-button {
+	margin-top: 2px !important;
+	width: 88px !important;
+}
+
+.container > header .fb-like {
+	top: -5px !important;
+}

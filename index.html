@@ -48,6 +48,9 @@
       </div>
     </div>
 
+
+
+
     <script type="text/javascript">
         var viz = cartodb.createVis('map', 'http://osm2.cartodb.com/api/v1/viz/2275/viz.json')
             .done(function(vis, layers) {
@@ -56,7 +59,6 @@
                     Math.floor((Math.abs(new Date() - new Date(Date.parse(viz.updated_at)))) / (1000*60))
                 );                
             });  
-    
     </script>
 
 

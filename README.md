@@ -1,4 +1,4 @@
-Dynamically web maps example: Barcelona Traffic Map 
+Dynamically web map example: Barcelona Traffic Map 
 ===============
 
 [Checkout the demo first](http://jatorre.github.com/bcn_traffic_map/ "Demo").
@@ -58,10 +58,99 @@ Now, if you [look at the source](http://www.bcn.cat/transit/dades/dadestrams.dat
 
 `tram_id#status_date#status#status_in_15min`
 
-We need a program that will check every 15minutes this URL and insert all this data into CartoDB if there is new data. In the future CartoDB will allow to syncronize with external resources, but for the time being you have to code that yourself. This is what we have built using [AppEngine](https://developers.google.com/appengine/). Why we choosed Appengine? Because is free, we will not need to mantain it and it has support for cron jobs (repetable tasks that can happen automtically).
+We need a program that will check every 15minutes this URL and insert all this data into CartoDB if there is new data. In the future CartoDB will allow to syncronize with external resources, but for the time being you have to code that yourself. This is what we have built using [AppEngine](https://developers.google.com/appengine/). Why we choosed Appengine? Because is free, we will not need to mantain it and it has support for cron jobs (repetable tasks that can happen automatically). You could probably also use Heroku or some other Application Cloud Services.
+
+Creating an Appengine app is not complicated, follow their instructions and use the code available on the `appengine_cron` folder. It basically consist of 3 files: 
+
+ * app.yaml : It is where you describe your app an routes. We only define one that will initiate the code
+ * cron.yaml : Is where we specify that the /bcn_traffic URL should be called every 15min
+ * main.py : Where the actual code is. Here is what gets run every 15min.
+
+I am not going to get into much details, the code is pretty self explanatory. Basically we start downloading the data from the remote server (http://www.bcn.cat/transit/dades/dadestrams.dat) and with that data we produce a SQL that we execute in CartoDB through the SQL API. 
+
+There are some other things on that code. For example, if there are probles getting the source data or writing in CartoDB and email is sent to let us know that something went wrong. The other part that might look strange is on the SQL. It might be that the data on the source has not change since last time we checked. We put some condition on the INSERT to ensure we only INSERT the data if it is actually newer. Also you will see that we are doing multiple INSERTs in one single statement. This is way faster to run that executing separately each one. Do not forget to add you api_key to allow for writes into your database.
+
+Finally, we could have decided to not insert the data, but actually just UPDATE with the latest values. That would be ok and will ensure that your CartoDB account do not keep growing infinetely. But by using INSERT int he future we will be able to create visualizations on how the traffic changes over time which can be pretty neat. But if you only want the last status of traffic you would probably be better with just UPDATES.
+
+Ok. So once you have that appengine app up and running, you should see new data getting inserted on the table every 15min more or less.
+
+Creating the visualization
+---------------------
+
+We will start creating the visualization on the CartoDB User Interface, and when we are happy with how it looks like we will create a simple html page to host it.
+
+So login to CartoDB and open the `bcn_traffic_stats` table. Go to the map and you will see nothing. Use this SQL
+
+```
+SELECT seg.cartodb_id, seg.the_geom_webmercator, stats.status 
+FROM bcn_traffic_trams as seg 
+  INNER JOIN bcn_traffic_stats as stats ON stats.tram_id=seg.tram 
+   AND stats.status_date = (SELECT max(status_date) FROM bcn_traffic_stats)
+```
+
+You might not see yet the map because of the CartoCSS, but you will in a minute. Let me explain this SQL first. We are here joining the two tables `bcn_traffic_trams` and `bcn_traffic_stats` using the `tram_id` and `tram` columns. We are selecting the `the_geom_webmercator` from the `bcn_traffic_trams` table and the `status` from `bcn_traffic_stats`.
+Fianlly we are setting a condition so that we only get the latest data. Remember that becase we are inserting all new data, not just replacing, we are acccumulating all the historic values, but on the visualization we only want to display the latest.
+
+Now, click on the CSS button and apply the following CartoCSS:
+
+```
+#bcn_traffic_trams::glow{
+  line-opacity: 1;
+  line-width:4;
+  line-color: white;
+  [zoom<11] {line-width:1.5; }
+  [zoom=11] {line-width:2.3; }
+  [zoom=12] {line-width:3.2; }
+  [zoom=13] {line-width:5.9; }
+  [zoom=14] {line-width:7.2; }
+  [zoom=15] {line-width:8.8; }
+  [zoom>15] {line-width:10; }
+  
+}
+
+#bcn_traffic_trams::main{
+  line-opacity: 1;
+  line-width:4;
+  [zoom<11] {line-width:1; }
+  [zoom=11] {line-width:1.5; }
+  [zoom=12] {line-width:2.0; }
+  [zoom=13] {line-width:3.5; }
+  [zoom=14] {line-width:4.2; }
+  [zoom=15] {line-width:5.2; }
+  [zoom>15] {line-width:6.5; }
 
 
+//0 = muy fluido
+[ status = 0] {line-color: #30AE00;}
 
+//1 = fluido
+[ status = 1] {line-color: #30AE00;}
+
+//2 = denso
+[ status = 2] {line-color: #FFD21D;}
+
+//3 = muy denso
+[ status = 3] {line-color: #FFD21D;}
+
+//4 = congestion
+[ status = 4] {line-color: #9A0505;}
+
+//5 = sin datos
+[ status = 5] {line-color: #FFFFFF;}
+
+//6 = cortado
+[ status = 6] {
+    line-color: #D10000;
+    line-dasharray:2,2;}
+
+}
+```
+This CartoCSS display the data in two ways, one in white to produce a glow effect and then another time depending the status of the traffic. Using this conditional sytling, together with some optimizations for different zoom levels you get the map.
+
+Change the background map to something you like and you should be seeing already the map you wanted.
+
+Embedding this visualization on an external site
+---------------------
 
 
 

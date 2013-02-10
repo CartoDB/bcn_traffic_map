@@ -1,7 +1,9 @@
 Dynamic web map example: Barcelona Traffic Map 
 ===============
+[![Preview of example visualization](http://jatorre.github.com/bcn_traffic_map/img/readme_header.png)](http://jatorre.github.com/bcn_traffic_map/)
 
-[Checkout the demo first](http://jatorre.github.com/bcn_traffic_map/ "Demo").
+
+**[Checkout the demo first](http://jatorre.github.com/bcn_traffic_map/ "Demo").**
 
 This little project is a simple demo on how to use [CartoDB](http://www.cartodb.com) to create maps where its data changes often. In this case the data is traffic data from the city of Barcelona, but it could be any other type of data. This is an example for when you have a data source that changes often and you want to have a map embed on a site with the latest data always visible.
 

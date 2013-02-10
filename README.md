@@ -157,15 +157,27 @@ Now that we have the map lookign good and automatically updating we are going to
 The microsite is very simple, check out index.html here in the repository. Apart from HTML here and there the most important part is how we are making use of cartodb.js to embed the vizualization we just created.
 
 ```
-    <script type="text/javascript">
-        var viz = cartodb.createVis('map', 'http://osm2.cartodb.com/api/v1/viz/2275/viz.json')
-            .done(function(vis, layers) {
-                //Update the info about last update
-                $("#updatedAtb").text(
-                    Math.floor((Math.abs(new Date() - new Date(Date.parse(viz.updated_at)))) / (1000*60))
-                );                
+<script type="text/javascript">
+    var viz = cartodb.createVis('map', 'http://osm2.cartodb.com/api/v1/viz/2275/viz.json')
+        .done(function(vis, layers) {
+            //Update the info about last update
+            $("#updatedAtb").text(
+                Math.floor((Math.abs(new Date() - new Date(Date.parse(viz.updated_at)))) / (1000*60))
+            );                
     });  
 </script>
+```
+We are using the vizjson document that you get on the User Interface when you click on Share this map and then on API. We also check out when the visualization is loaded the time of the last update, is an attribute returned by cartodb.js, and with it calculate the number of minutes since last update. We update finally the value on the HTML to present that infromation to the user.
 
+Conclussion
+---------------------
 
+We hope this has given you a good idea of how to use CartoDB power for rendering dynamic data. If you think about it you have now an always updated map of traffic in Barcelona almost for free.
 
+There are a lot of other scenarios where this type of maps apply. For example if you have a transit map for a city. You can design the entire map with all possible options, and then dynamically change the data when a route is closed or the service has changed. The maps on your site will automatically update without having to generate them manually.
+
+In the future CartoDB will allow to perform some of the syncronization operations that we have described here in Appengine directly inside CartoDB. But while this arrives, using some external Application cloud services can be a really cheap and good option.
+
+We hope you have liked this little app and please [contact us](mailto:contact@cartodb.com) in case you have any questions.
+
+CartoDB team.

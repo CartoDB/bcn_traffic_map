@@ -149,8 +149,23 @@ This CartoCSS display the data in two ways, one in white to produce a glow effec
 
 Change the background map to something you like and you should be seeing already the map you wanted.
 
-Embedding this visualization on an external site
+Embedding the visualization on an external site
 ---------------------
+
+Now that we have the map lookign good and automatically updating we are going to make use of an existing template to create a microsite. This is just an example, you can ambed this map in many different contests.
+
+The microsite is very simple, check out index.html here in the repository. Apart from HTML here and there the most important part is how we are making use of cartodb.js to embed the vizualization we just created.
+
+```
+    <script type="text/javascript">
+        var viz = cartodb.createVis('map', 'http://osm2.cartodb.com/api/v1/viz/2275/viz.json')
+            .done(function(vis, layers) {
+                //Update the info about last update
+                $("#updatedAtb").text(
+                    Math.floor((Math.abs(new Date() - new Date(Date.parse(viz.updated_at)))) / (1000*60))
+                );                
+    });  
+</script>
 
 
 

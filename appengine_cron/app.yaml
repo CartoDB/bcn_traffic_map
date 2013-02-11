@@ -6,3 +6,6 @@ api_version: 1
 handlers:
 - url: /bcn_traffic
   script: main.py
+  
+- url: /mad_traffic
+  script: main.py

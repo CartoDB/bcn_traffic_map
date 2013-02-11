@@ -6,6 +6,7 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import urlfetch
 import urllib
 import logging
+from xml.etree import ElementTree as etree
 
 
 
@@ -63,8 +64,23 @@ class BcnTrafficCron(webapp.RequestHandler):
 
 
 
+class MadTrafficCron(webapp.RequestHandler):
+    def get(self):
+      urlStr="http://informo.munimadrid.es/informo/tmadrid/intensidades.kml"
+      result = urlfetch.fetch(urlStr)
+      raw_data = result.content
+      xml = etree.fromstring(raw_data)
+      self.response.out.write(xml.tag)
+      return
+      for segment in xml.findall('Placemark'):
+        self.response.out.write(segment.find('styleUrl').text)
+      
+      
+
+
 application = webapp.WSGIApplication([
-  ('/bcn_traffic', BcnTrafficCron)
+  ('/bcn_traffic', BcnTrafficCron),
+  ('/mad_traffic', MadTrafficCron)
 ],debug=True)
 
 

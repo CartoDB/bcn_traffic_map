@@ -65,18 +65,63 @@ class BcnTrafficCron(webapp.RequestHandler):
 
 
 class MadTrafficCron(webapp.RequestHandler):
+    ns='{http://earth.google.com/kml/2.2}'
+    data_url = "http://informo.munimadrid.es/informo/tmadrid/tramos.kml"
     def get(self):
-      urlStr="http://informo.munimadrid.es/informo/tmadrid/intensidades.kml"
-      result = urlfetch.fetch(urlStr)
-      raw_data = result.content
+      raw_data = self.download_traffic_info()
       xml = etree.fromstring(raw_data)
-      self.response.out.write(xml.tag)
-      return
-      for segment in xml.findall('Placemark'):
-        self.response.out.write(segment.find('styleUrl').text)
+      document = xml.find("%sDocument" % (self.ns))
+      self.delete_old_traffic()
+      self.create_new_traffic(document.findall('%sPlacemark' % (self.ns)))
       
-      
+    def download_traffic_info(self):
+      result = urlfetch.fetch(self.data_url, deadline = 30)
+      if result.status_code != 200:
+        self.send_error_mail(self.data_url,result)
+      return result.content
 
+    def send_error_mail(self,url,result):
+      mail.send_mail(sender="ethervoid@gmail.com",
+            to="ethervoid@gmail.com",
+            subject="Problem updating data ON SOURCE on service mad_traffic! HTTP CODE: %s" %(result.status_code),
+            body="URL:%s\n\n\n %s" %(url,result.content))
+      logging.info("SOURCE failed: %s" %(url))
+      self.response.out.write(result.content)
+    
+    def delete_old_traffic(self):
+      sql = "DELETE FROM mad_traffic_stats"
+      self.execute_sql(sql)
+
+    def create_new_traffic(self,list_of_nodes):
+      sql = self.create_new_traffic_info_sql(list_of_nodes)
+      self.execute_sql(sql)
+
+    def create_new_traffic_info_sql(self,list_of_nodes):
+      sql = "INSERT INTO mad_traffic_stats(geohash,status,status_date) VALUES "
+      for row in list_of_nodes:
+        status = '\'' + row.find('%sstyleUrl' % (self.ns)).text[1:] + '\''
+        coordinates = row.find('%sLineString/%scoordinates' % (self.ns,self.ns)).text
+        line_string = '\'<LineString><coordinates>' + coordinates + '</coordinates></LineString>\''
+        now = datetime.now().strftime("%Y%m%d%H%M%S")
+        sql += "(ST_GeoHash(ST_GeomFromKML(%s), 26),%s, to_timestamp('%s','YYYYMMDDHH24MISS'))," % (line_string,status,now)
+      sql=sql[:-1]
+      return sql
+
+    def execute_sql(self,sql):
+      form_fields = {
+        'api_key' :'XXXXXXXXX',
+        'q'       :sql
+      }
+      form_data = urllib.urlencode(form_fields)
+      urlCartoSql = "http://osm2.cartodb.com/api/v2/sql"
+      result = urlfetch.fetch(url=urlCartoSql,
+                              payload=form_data,
+                              method=urlfetch.POST,
+                              deadline = 30,
+                              headers={'Content-Type': 'application/x-www-form-urlencoded'})
+
+      if result.status_code != 200:
+        self.send_error_mail(urlCartoSql,result)
 
 application = webapp.WSGIApplication([
   ('/bcn_traffic', BcnTrafficCron),

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <!--Edit the title of the page-->
+    <title>Dynamic web map of Madrid traffic</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <!--[if lte IE 8]>
+      <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+    <![endif]-->
+    <!--Switch between the different themes changing the stylesheet below - light-theme.css |dark-theme.css -->
+    <link rel="stylesheet" href="css/light-theme.css">
+    <link rel="stylesheet" href="css/makeitresponsive.css">
+    <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+  </head>
+  <body>
+
+    <div class="map" id="map"></div>
+
+    <div class="sidepanel">
+      <div class="wrapper">
+          <a href="https://github.com/ethervoid/mad_traffic_map"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
+        <div class="context subheader">
+          <p>Original map created by <a href="http://twitter.com/jatorre">jatorre</a> and modified by <a href="http://twitter.com/ethervoid">ethervoid</a>.</p>
+        </div>
+        <h1>Dynamic web map of Madrid traffic</h1>
+        <h2>Last update <b id="minSinceUpdate">...</b> min. ago</h2>
+        
+        <p>This is a map of the traffic status in Madrid. It has been created using the public data from <a href="http://informo.munimadrid.es">Informo Madrid</a></p>
+
+        <!--Copy and paste the div below for creating content blocks-->
+        <h3>LEGEND</h3>
+        <div class="legend">
+          <div class="color fluid"></div><div>fluid</div>
+          <div class="color dense"></div><div>dense</div>
+          <div class="color delay"></div><div>delay</div>
+          <div class="color congested" ></div><div>congested</div>
+          <div class="color closed"></div><div>closed</div>
+          <div class="color nodata"></div><div>no data</div>
+        </div>
+            
+        <p>This map has been created to demo how to use <a href="http://www.cartodb.com">CartoDB</a> to represent dynamic data. The data in the source changes more or less every 15 minutes. Through a little script in AppEngine we update the data on CartoDB. Because maps on CartoDB are dynamically generated, what you see here is the latest map from the latest data. </p>
+
+        <h3>Source and how to</h3>
+        <p>This is a fork / modification of the original <a href="http://github.com/cartodb/bcn_traffic_map">Barcelona Traffic Map</a>. You can take a look at this source code in its <a href="http://github.com/ethervoid/mad_traffic_map">Github Repositoy.</a> 
+
+        <div class="context footer">
+          <p>Check out <a href="http://cartodb.com">CartoDB</a> for more cool maps.</p></p>
+          <div class="share">
+              <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+              <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+           </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+        var options = {
+            center: [40.41428,-3.708572],
+            zoom: 12,
+            loaderControl: false
+        };
+        var viz = cartodb.createVis('map', 'http://ethervoid.cartodb.com/api/v1/viz/19837/viz.json',options)
+            .done(function(vis, layers) {
+                //Update the info about last update
+                $("#minSinceUpdate").text(
+                    Math.floor((Math.abs(new Date() - new Date(Date.parse(viz.updated_at)))) / (1000*60))
+                );                
+            });  
+
+    </script>
+  </body>
+</html>

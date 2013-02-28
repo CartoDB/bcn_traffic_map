@@ -9,3 +9,6 @@ handlers:
   
 - url: /mad_traffic
   script: main.py
+
+- url: /nyc_traffic
+  script: main.py

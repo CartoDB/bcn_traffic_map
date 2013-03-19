@@ -1,8 +1,7 @@
 cron:
 - description: update bcn traffic stats
   url: /bcn_traffic
-<<<<<<< HEAD
-  schedule: every 15 minutes
+  schedule: every 1 day
 
 - description: update mad traffic stats
   url: /mad_traffic
@@ -10,11 +9,5 @@ cron:
 
 - description: update nyc traffic stats
   url: /nyc_traffic
-  schedule: every 15 minutes
-=======
   schedule: every 1 day
   
-- description: update mad traffic stats
-  url: /mad_traffic
-  schedule: every 1 day
->>>>>>> changed for update very day not every 15min

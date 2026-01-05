@@ -1,3 +1,17 @@
+# ⚠️ ARCHIVED - This repository is no longer maintained
+
+**This repository has been archived and is no longer actively maintained.**
+
+This project was last updated on 2014-02-04 and is preserved for historical reference only.
+
+- 🔒 **Read-only**: No new issues, pull requests, or changes will be accepted
+- 📦 **No support**: This code is provided as-is with no support or updates
+- 🔍 **For reference only**: You may fork this repository if you wish to continue development
+
+For current CARTO projects and actively maintained repositories, please visit: https://github.com/CartoDB
+
+---
+
 Dynamic web map example: Barcelona Traffic Map 
 ===============
 [![Preview of example visualization](http://jatorre.github.com/bcn_traffic_map/img/readme_header.png)](http://jatorre.github.com/bcn_traffic_map/)
